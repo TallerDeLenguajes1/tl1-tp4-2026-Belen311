@@ -1,6 +1,7 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<time.h>
+#include<string.h>
 
 typedef struct Tarea{
 int TareaID;//Numérico autoincremental comenzando en 1000
@@ -25,10 +26,12 @@ void mostrarLista(Nodo *start);
 
 Nodo *eliminarNodo(Nodo **start, int id);
 
-int main(){
-    Nodo *tareasRealiz, *tareasPend, *nuevoNodo, *moverNodo;
-    int cont = 1000, respuesta, id;
+Nodo *buscarNodo(Nodo *start, int id, char *palabra);
 
+int main(){
+    Nodo *tareasRealiz, *tareasPend, *nuevoNodo, *moverNodo, *buscarNod;
+    int cont = 1000, respuesta, id;
+    char *palabra;
     tareasRealiz = crearListaVacia();
     tareasPend = crearListaVacia();
 
@@ -56,8 +59,69 @@ int main(){
         } else {
             insertarAlFinal(tareasRealiz, moverNodo);
         }
-    
+
+    printf("Desea buscar por id(1) o por palabra(0): ");
+    scanf("%d", &respuesta);
+    if (respuesta)
+    {
+        printf("Ingresar Id: ");
+        scanf("%d", &id);
+        palabra = NULL;
+        buscarNod = buscarNodo(tareasPend, id, palabra);
+        if (buscarNod)
+        {
+            printf("Tarea de ID: %d\n", buscarNod->T.TareaID);
+            printf("Descripcion: ");
+            puts(buscarNod->T.Descripcion);
+            printf("Duracion: %d\n", buscarNod->T.Duracion);
+            printf("Se encuentra en listas pendientes");
+        } else {
+            buscarNod = buscarNodo(tareasRealiz, id, palabra);
+            if (buscarNod)
+            {
+                printf("Tarea de ID: %d\n", buscarNod->T.TareaID);
+                printf("Descripcion: ");
+                puts(buscarNod->T.Descripcion);
+                printf("Duracion: %d\n", buscarNod->T.Duracion);
+                printf("Se encuentra en listas realizadas");
+            } else {
+                printf("No se encontro");
+            }
+        }
+    } else {
+        palabra = (char *)malloc(50 * sizeof(char));
+        printf("Ingrese la palabra clave: ");
+        fflush(stdin);
+        gets(palabra);
+        id = 0;
+        buscarNod = buscarNodo(tareasPend, id, palabra);
+        if (buscarNod)
+        {
+            printf("\n");
+            printf("Tarea de ID: %d\n", buscarNod->T.TareaID);
+            printf("Descripcion: ");
+            puts(buscarNod->T.Descripcion);
+            printf("Duracion: %d\n", buscarNod->T.Duracion);
+            printf("Se encuentra en listas pendientes");
+        } else {
+            buscarNod = buscarNodo(tareasRealiz, id, palabra);
+            if (buscarNod)
+            {
+                printf("\n");
+                printf("Tarea de ID: %d\n", buscarNod->T.TareaID);
+                printf("Descripcion: ");
+                puts(buscarNod->T.Descripcion);
+                printf("Duracion: %d\n", buscarNod->T.Duracion);
+                printf("Se encuentra en listas realizadas");
+            } else {
+                printf("No se encontro");
+            }
+        }
+    }
+
+    printf("\n");
     mostrarLista(tareasPend);
+    printf("\n");
     mostrarLista(tareasRealiz);
 
     return 0;
@@ -119,9 +183,29 @@ Nodo *eliminarNodo(Nodo **start, int id){
         if (pAux == *start){
             *start = pAux->Siguiente;
         } else {
-            pAnterior = pAux->Siguiente;
+            pAnterior->Siguiente = pAux->Siguiente;
         }
         pAux->Siguiente = NULL;
     }
     return pAux;
+}
+
+Nodo *buscarNodo(Nodo *start, int id, char *palabra){
+    Nodo *pAux = start, *pAnterior = NULL;
+    
+    if (id){
+        while (pAux && pAux->T.TareaID != id )
+        {
+            pAux = pAux->Siguiente;
+        }
+        
+        return pAux;
+    } else if (palabra){
+        while (pAux && strcmp(palabra, pAux->T.Descripcion) != 0)
+        {
+            pAux = pAux->Siguiente;
+        }
+        
+        return pAux;
+    }
 }
