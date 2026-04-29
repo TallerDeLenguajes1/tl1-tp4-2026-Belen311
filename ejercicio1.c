@@ -28,6 +28,8 @@ Nodo *eliminarNodo(Nodo **start, int id);
 
 Nodo *buscarNodo(Nodo *start, int id, char *palabra);
 
+void liberarMemoria(Nodo **start);
+
 int main(){
     Nodo *tareasRealiz, *tareasPend, *nuevoNodo, *moverNodo, *buscarNod;
     int cont = 1000, respuesta, id;
@@ -123,6 +125,9 @@ int main(){
     mostrarLista(tareasPend);
     printf("\n");
     mostrarLista(tareasRealiz);
+    free(palabra);
+    liberarMemoria(&tareasPend);
+    liberarMemoria(&tareasRealiz);
 
     return 0;
 }
@@ -205,7 +210,26 @@ Nodo *buscarNodo(Nodo *start, int id, char *palabra){
         {
             pAux = pAux->Siguiente;
         }
-        
+
         return pAux;
+    }
+}
+
+void liberarMemoria(Nodo **start){
+    Nodo *pAux = *start, *pAnt = NULL, *nodoExtraido;
+
+    while (pAux)
+    {
+        pAnt = pAux;
+        pAux = pAux->Siguiente;
+        *start = pAnt->Siguiente;
+        nodoExtraido = pAnt;
+        if (nodoExtraido)
+        {
+            printf("\n");
+            printf("Liberando memoria");
+            free(nodoExtraido->T.Descripcion);
+            free(nodoExtraido);
+        }
     }
 }
